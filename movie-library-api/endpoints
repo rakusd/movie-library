@@ -1,0 +1,37 @@
+GET search-movies()/your-movies()
+    query_params:
+        movie_name: string (nullable)
+        year: int (nullable)
+        limit: int (required)
+        offset: int (required)
+
+GET search-by-actor()/your-movies-by-actor()
+    query_params:
+        actor: string (nullable)
+        limit: int (required)
+        offset: int (required)
+
+Oba return type:
+  [
+      {
+          id: string,
+          title: string,
+          year: string
+          actors: [
+              {
+                  name: string,
+                  description: string,
+                  birthYear: string,
+                  birthPlace: string
+              }
+          ]
+      }
+  ]
+
+POST add-movie()
+        body_param:
+            id: string (required)
+
+DELETE remove-movie()
+        query_param:
+            id: string (required)

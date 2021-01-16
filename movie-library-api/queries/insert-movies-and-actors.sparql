@@ -19,7 +19,7 @@ INSERT {
 	
 	?actor lmdb:actor_name ?actor_name ;
 		   db-prop:birthDate ?actor_birth_date ;
-           db-prop:birthPlace ?actor_birth_place ;
+       db-prop:birthPlace ?actor_birth_place ;
 		   rdfs:comment ?actor_description .
   }												
 }
