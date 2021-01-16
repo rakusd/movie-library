@@ -18,6 +18,9 @@ export class FavouritesMoviesActorsComponent implements OnInit, OnDestroy {
   public dataSource = new MatTableDataSource<ActorMovies>();
   public loadingData = false;
 
+  public showDetails = false;
+  public selectedActor: ActorMovies = {};
+
   destroy$ = new Subject();
   actorNameFilterChanged$ = new Subject<string>();
 
@@ -72,5 +75,10 @@ export class FavouritesMoviesActorsComponent implements OnInit, OnDestroy {
         this.dataSource.data = this.dataSource.data.filter(a => a.id !== id);
         this.snackBarService.showMessage('Successfully removed movie from favourites!');
       });
+  }
+
+  public rowClicked(row: ActorMovies) {
+    this.showDetails = true;
+    this.selectedActor = row;
   }
 }
