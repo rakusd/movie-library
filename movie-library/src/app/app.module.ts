@@ -8,15 +8,29 @@ import { ExploreComponent } from './explore/explore.component';
 import { AngularMaterialModule } from './material.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { HomeComponent } from './home/home.component';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { FavouritesComponent } from './favourites/favourites.component';
+import { ExploreMoviesComponent } from './explore/explore-movies/explore-movies.component';
+import { ExploreMovieActorsComponent } from './explore/explore-movie-actors/explore-movie-actors.component';
+import { FavouritesMoviesComponent } from './favourites/favourites-movies/favourites-movies.component';
+import { FavouritesMoviesActorsComponent } from './favourites/favourites-movies-actors/favourites-movies-actors.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    ExploreComponent
+    ExploreComponent,
+    FavouritesComponent,
+    ExploreMoviesComponent,
+    ExploreMovieActorsComponent,
+    FavouritesMoviesComponent,
+    FavouritesMoviesActorsComponent
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
+    FormsModule,
     AppRoutingModule,
     AngularMaterialModule,
     FlexLayoutModule,
