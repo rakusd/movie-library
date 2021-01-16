@@ -1,0 +1,16 @@
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix db: <http://dbpedia.org/>
+prefix lmdb: <http://data.linkedmdb.org/resource/movie/>
+prefix purl: <http://purl.org/dc/terms/>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+
+SELECT ?movies
+WHERE {
+  ?movie a lmdb:film ;
+         purl:title ?title ;
+         lmdb:initial_release_date ?release_date .
+    
+  FILTER (CONTAINS(LCASE(?title), LCASE('Age')))
+  FILTER (STRSTARTS(?release_date, '2002')) 
+}
+LIMIT 10 OFFSET 0
