@@ -16,6 +16,7 @@ import { ExploreMovieActorsComponent } from './explore/explore-movie-actors/expl
 import { FavouritesMoviesComponent } from './favourites/favourites-movies/favourites-movies.component';
 import { FavouritesMoviesActorsComponent } from './favourites/favourites-movies-actors/favourites-movies-actors.component';
 import { ActorDetailsComponent } from './actor-details/actor-details.component';
+import { MovieDetailsComponent } from './movie-details/movie-details.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { ActorDetailsComponent } from './actor-details/actor-details.component';
     ExploreMovieActorsComponent,
     FavouritesMoviesComponent,
     FavouritesMoviesActorsComponent,
-    ActorDetailsComponent
+    ActorDetailsComponent,
+    MovieDetailsComponent
   ],
   imports: [
     BrowserModule,

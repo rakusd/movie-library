@@ -27,7 +27,9 @@ export class ExploreMovieActorsComponent implements OnInit, OnDestroy {
   actorName: string = '';
   offset = 0;
 
-  constructor(private api: ApiService, private snackBarService: SnackbarService) { }
+  constructor(
+    private api: ApiService,
+    private snackBarService: SnackbarService) { }
 
   ngOnInit(): void {
     this.loadingData = true;

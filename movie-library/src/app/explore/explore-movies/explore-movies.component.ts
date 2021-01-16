@@ -6,6 +6,7 @@ import { Movie } from '../../api/movie';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators'
 import { SnackbarService } from '../../snackbar.service';
 import { environment } from '../../../environments/environment';
+import { Actor } from 'src/app/api/actor';
 
 @Component({
   selector: 'app-explore-movies',
@@ -18,6 +19,10 @@ export class ExploreMoviesComponent implements OnInit, OnDestroy {
   public dataSource = new MatTableDataSource<Movie>();
   public loadingData = false;
 
+  public showDetails = false;
+  public selectedMovie: Movie = {};
+  public selectedMovieActors: Actor[] = [];
+
   destroy$ = new Subject();
   titleFilterChanged$ = new Subject<string>();
   yearFilterChanged$ = new Subject<number>();
@@ -26,7 +31,9 @@ export class ExploreMoviesComponent implements OnInit, OnDestroy {
   yearFilter?: number;
   offset = 0;
 
-  constructor(private api: ApiService, private snackBarService: SnackbarService) { }
+  constructor(
+    private api: ApiService,
+    private snackBarService: SnackbarService) { }
 
   ngOnInit(): void {
     this.loadingData = true;
@@ -57,6 +64,7 @@ export class ExploreMoviesComponent implements OnInit, OnDestroy {
 
   public getMovies() {
     this.loadingData = true;
+    this.showDetails = false;
     this.api.searchMovies(environment.pageSize, this.offset, this.titleFilter, this.yearFilter)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
@@ -82,5 +90,11 @@ export class ExploreMoviesComponent implements OnInit, OnDestroy {
       .subscribe(_ => {
         this.snackBarService.showMessage('Successfully added movie to favourites!')
       });
+  }
+
+  public rowClicked(row: Movie) {
+    this.showDetails = true;
+    this.selectedMovie = row;
+    this.selectedMovieActors = row.actors || [];
   }
 }

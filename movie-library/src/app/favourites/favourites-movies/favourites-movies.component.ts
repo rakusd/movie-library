@@ -6,6 +6,8 @@ import { Movie } from '../../api/movie';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators'
 import { SnackbarService } from '../../snackbar.service';
 import { environment } from '../../../environments/environment';
+import { Actor } from 'src/app/api/actor';
+import { FavouritesRemovalSyncService } from '../favourites-removal-sync.service';
 
 @Component({
   selector: 'app-favourites-movies',
@@ -18,6 +20,10 @@ export class FavouritesMoviesComponent implements OnInit, OnDestroy {
   public dataSource = new MatTableDataSource<Movie>();
   public loadingData = false;
 
+  public showDetails = false;
+  public selectedMovie: Movie = {};
+  public selectedMovieActors: Actor[] = [];
+
   destroy$ = new Subject();
   titleFilterChanged$ = new Subject<string>();
   yearFilterChanged$ = new Subject<number>();
@@ -26,7 +32,10 @@ export class FavouritesMoviesComponent implements OnInit, OnDestroy {
   yearFilter?: number;
   offset = 0;
 
-  constructor(private api: ApiService, private snackBarService: SnackbarService) { }
+  constructor(
+    private api: ApiService,
+    private snackBarService: SnackbarService,
+    private favouritesService: FavouritesRemovalSyncService) { }
 
   ngOnInit(): void {
     this.loadingData = true;
@@ -48,6 +57,15 @@ export class FavouritesMoviesComponent implements OnInit, OnDestroy {
     ).subscribe((res) => {
       this.getMovies();
     });
+
+    this.favouritesService.movieRemovedFromFavourites$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((id) => {
+      this.dataSource.data = this.dataSource.data.filter(a => a.id !== id);
+      if (this.selectedMovie && this.selectedMovie.id === id) {
+        this.showDetails = false;
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -57,6 +75,7 @@ export class FavouritesMoviesComponent implements OnInit, OnDestroy {
 
   public getMovies() {
     this.loadingData = true;
+    this.showDetails = false;
     this.api.searchFavouritesMovies(environment.pageSize, this.offset, this.titleFilter, this.yearFilter)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
@@ -80,8 +99,13 @@ export class FavouritesMoviesComponent implements OnInit, OnDestroy {
   public removeFromFavourites(id: string) {
     this.api.removeFromFavourites(id)
       .subscribe(_ => {
-        this.dataSource.data = this.dataSource.data.filter(a => a.id !== id);
         this.snackBarService.showMessage('Successfully removed movie from favourites!');
       });
+  }
+
+  public rowClicked(row: Movie) {
+    this.showDetails = true;
+    this.selectedMovie = row;
+    this.selectedMovieActors = row.actors || [];
   }
 }

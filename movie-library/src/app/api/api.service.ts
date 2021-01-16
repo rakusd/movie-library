@@ -1,8 +1,9 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { FavouritesRemovalSyncService } from '../favourites/favourites-removal-sync.service';
 import { ActorMovies } from './actor-movies';
 import { Movie } from './movie';
 
@@ -11,7 +12,9 @@ import { Movie } from './movie';
 })
 export class ApiService {
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(
+    private httpClient: HttpClient,
+    private favouritesService: FavouritesRemovalSyncService) { }
 
   public searchMovies(limit: number, offset: number, title?: string, year?: number): Observable<Movie[]> {
     let params = new HttpParams();
@@ -74,6 +77,11 @@ export class ApiService {
 
   public removeFromFavourites(id: string): Observable<any> {
     return this.httpClient.delete(`${environment.apiUrl}/favourites/${id}`)
+      .pipe(
+        tap(() => {
+          this.favouritesService.removeMovieFromFavourites(id);
+        })
+      )
   }
 
   private mapMoviesToActorMovies(data: Movie[]): ActorMovies[] {

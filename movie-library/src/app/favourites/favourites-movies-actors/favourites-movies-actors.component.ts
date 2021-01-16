@@ -6,6 +6,7 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators'
 import { SnackbarService } from '../../snackbar.service';
 import { ActorMovies } from 'src/app/api/actor-movies';
 import { environment } from '../../../environments/environment';
+import { FavouritesRemovalSyncService } from '../favourites-removal-sync.service';
 
 @Component({
   selector: 'app-favourites-movies-actors',
@@ -27,7 +28,10 @@ export class FavouritesMoviesActorsComponent implements OnInit, OnDestroy {
   actorName: string = '';
   offset = 0;
 
-  constructor(private api: ApiService, private snackBarService: SnackbarService) { }
+  constructor(
+    private api: ApiService,
+    private snackBarService: SnackbarService,
+    private favouritesService: FavouritesRemovalSyncService) { }
 
   ngOnInit(): void {
     this.loadingData = true;
@@ -41,6 +45,15 @@ export class FavouritesMoviesActorsComponent implements OnInit, OnDestroy {
       this.actorName = res;
       this.getFavouritesMoviesByActors();
     });
+
+    this.favouritesService.movieRemovedFromFavourites$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((id) => {
+        this.dataSource.data = this.dataSource.data.filter(a => a.id !== id);
+        if (this.selectedActor && this.selectedActor.id === id) {
+          this.showDetails = false;
+        }
+      });
   }
 
   ngOnDestroy(): void {
@@ -70,7 +83,6 @@ export class FavouritesMoviesActorsComponent implements OnInit, OnDestroy {
   public removeFromFavourites(id: string) {
     this.api.removeFromFavourites(id)
       .subscribe(_ => {
-        this.dataSource.data = this.dataSource.data.filter(a => a.id !== id);
         this.snackBarService.showMessage('Successfully removed movie from favourites!');
       });
   }
