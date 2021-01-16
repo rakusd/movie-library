@@ -1,0 +1,27 @@
+<h2 class="mat-h2">Actor details</h2>
+
+<div fxLayout="column" fxLayoutGap="10px">
+    <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input matInput type="text" [(ngModel)]="actor.name" disabled>
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>Description</mat-label>
+        <textarea matInput 
+            cdkTextareaAutosize
+            #autosize="cdkTextareaAutosize"
+            cdkAutosizeMinRows="1"
+            cdkAutosizeMaxRows="8"
+            [(ngModel)]="actor.description"
+            disabled>
+        </textarea>
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>Birth year</mat-label>
+        <input matInput type="text" [(ngModel)]="actor.birthYear" disabled>
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>Birth place</mat-label>
+        <input matInput type="text" [(ngModel)]="actor.birthPlace" disabled>
+    </mat-form-field>
+</div>
