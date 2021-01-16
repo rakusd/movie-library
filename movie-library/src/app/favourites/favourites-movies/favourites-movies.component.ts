@@ -5,6 +5,7 @@ import { ApiService } from '../../api/api.service';
 import { Movie } from '../../api/movie';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators'
 import { SnackbarService } from '../../snackbar.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-favourites-movies',
@@ -23,10 +24,7 @@ export class FavouritesMoviesComponent implements OnInit, OnDestroy {
 
   titleFilter: string = '';
   yearFilter?: number;
-  pageSize = 100;
   offset = 0;
-
-  private readonly debounceTime = 500;
 
   constructor(private api: ApiService, private snackBarService: SnackbarService) { }
 
@@ -35,7 +33,7 @@ export class FavouritesMoviesComponent implements OnInit, OnDestroy {
     this.getMovies();
 
     this.titleFilterChanged$.pipe(
-      debounceTime(this.debounceTime),
+      debounceTime(environment.debounceTime),
       distinctUntilChanged(),
       takeUntil(this.destroy$)
     ).subscribe((res) => {
@@ -44,7 +42,7 @@ export class FavouritesMoviesComponent implements OnInit, OnDestroy {
     });
 
     this.yearFilterChanged$.pipe(
-      debounceTime(this.debounceTime),
+      debounceTime(environment.debounceTime),
       distinctUntilChanged(),
       takeUntil(this.destroy$)
     ).subscribe((res) => {
@@ -59,7 +57,7 @@ export class FavouritesMoviesComponent implements OnInit, OnDestroy {
 
   public getMovies() {
     this.loadingData = true;
-    this.api.searchFavouritesMovies(this.pageSize, this.offset, this.titleFilter, this.yearFilter)
+    this.api.searchFavouritesMovies(environment.pageSize, this.offset, this.titleFilter, this.yearFilter)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
         this.dataSource.data = data;

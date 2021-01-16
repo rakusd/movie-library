@@ -41,8 +41,8 @@
         </table>
     </div>
 
-    <div *ngIf="showDetails">
-        <app-actor-details [actor]="selectedActor"></app-actor-details>
+    <div fxFlex="30">
+        <app-actor-details *ngIf="showDetails" class="actor-details" [actor]="selectedActor"></app-actor-details>
     </div>
 </div>
 

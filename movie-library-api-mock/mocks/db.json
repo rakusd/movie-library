@@ -1,0 +1,20 @@
+{
+  "movies": [
+    { "id": 1, "title": "film 1", "year": "2001", "actors": [{"name": "aktor 1", "description": "opis 1"}] },
+	{ "id": 2, "title": "film 2", "year": "2002", "actors": [{"name": "aktor 2", "description": "opis 2"}] },
+	{ "id": 3, "title": "film 3", "year": "2003", "actors": [{"name": "aktor 3", "description": "opis 3"}] },
+	{ "id": 4, "title": "film 4", "year": "2004", "actors": [{"name": "aktor 4", "description": "opis 4"}] },
+	{ "id": 5, "title": "film 5", "year": "2005", "actors": [{"name": "aktor 5", "description": "opis 5"}, {"name": "aktor 1", "description": "opis 1"}] }
+  ],
+  "favourites": [
+	  { "id": 100, "actorName": "aktor 100", "title": "film 100", "actors": [{"name": "aktor 1", "description": "opis 1 opis 1 das das d as d as d as d as d as d as d as d as d as d as d as d as d sa d a sd as d as d as ds d sa ds ad a s d as d as d as d as d as d as d as d as d as d as d as d as d as d as d as d sa d a sd as d as d as ds d sa ds ad a s d as d asd as d as d as d as d as d as d as d as d as d as d as d as d sa d a sd as d as d as ds d sa ds ad a s d ad as d as d as d as d as d as d as d as d as d as d as d as d sa d a sd as d as d as ds d sa ds ad a s d ad as d as d as d as d as d as d as d as d as d as d as d as d sa d a sd as d as d as ds d sa ds ad a s d as d as d as d  as d sa d asdasdasdas d asd asd as d as ds d as d as d  as d sa d asdasdasdas d asd asd as d as ds d as d as d  as d sa d asdasdasdas d asd asd as d as d d as d  as d sa d asdasdasdas d asd asd as d as dd  as d sa d asdasdasdas d asd asd as d as d"}] },
+	  { "id": 101, "actorName": "aktor 100", "title": "film 100", "actors": [{"name": "aktor 1", "description": "opis 1", "birthYear": "2010"}] }
+  ],
+  "actors": [
+    { "id": 1, "title": "film 1", "year": "2001", "actorName": "aktor 1", "actors": [{"name": "aktor 1", "description": "opis 1 das das d as d as d as d as d as d as d as d as d as d as d as d as d sa d a sd as d as d as ds d sa ds ad a s d as d as d as d  as d sa d asdasdasdas d asd asd as d as d"}] },
+	{ "id": 2, "title": "film 2", "year": "2002", "actorName": "aktor 2", "actors": [{"name": "aktor 2", "description": "opis 2"}] },
+	{ "id": 3, "title": "film 3", "year": "2003", "actorName": "aktor 3 aktor 2", "actors": [{"name": "aktor 3", "description": "opis 3"}, {"name": "aktor 2", "description": "opis 2"}] },
+	{ "id": 4, "title": "film 4", "year": "2004", "actorName": "aktor 4", "actors": [{"name": "aktor 4", "description": "opis 4"}] },
+	{ "id": 5, "title": "film 5", "year": "2005", "actorName": "aktor 5 aktor 1", "actors": [{"name": "aktor 5", "description": "opis 5"}, {"name": "aktor 1", "description": "opis 1"}] }
+  ]
+}

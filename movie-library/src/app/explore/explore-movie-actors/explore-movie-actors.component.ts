@@ -5,6 +5,7 @@ import { ApiService } from '../../api/api.service';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators'
 import { SnackbarService } from '../../snackbar.service';
 import { ActorMovies } from 'src/app/api/actor-movies';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-explore-movie-actors',
@@ -17,14 +18,14 @@ export class ExploreMovieActorsComponent implements OnInit, OnDestroy {
   public dataSource = new MatTableDataSource<ActorMovies>();
   public loadingData = false;
 
+  public showDetails = false;
+  public selectedActor: ActorMovies = {};
+
   destroy$ = new Subject();
   actorNameFilterChanged$ = new Subject<string>();
 
   actorName: string = '';
-  pageSize = 100;
   offset = 0;
-
-  private readonly debounceTime = 500;
 
   constructor(private api: ApiService, private snackBarService: SnackbarService) { }
 
@@ -33,7 +34,7 @@ export class ExploreMovieActorsComponent implements OnInit, OnDestroy {
     this.getMoviesByActors();
 
     this.actorNameFilterChanged$.pipe(
-      debounceTime(this.debounceTime),
+      debounceTime(environment.debounceTime),
       distinctUntilChanged(),
       takeUntil(this.destroy$)
     ).subscribe((res) => {
@@ -48,8 +49,9 @@ export class ExploreMovieActorsComponent implements OnInit, OnDestroy {
   }
 
   public getMoviesByActors() {
+    this.showDetails = false;
     this.loadingData = true;
-    this.api.searchMoviesByActor(this.pageSize, this.offset, this.actorName)
+    this.api.searchMoviesByActor(environment.pageSize, this.offset, this.actorName)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
         this.dataSource.data = data;
@@ -70,5 +72,10 @@ export class ExploreMovieActorsComponent implements OnInit, OnDestroy {
       .subscribe(_ => {
         this.snackBarService.showMessage('Successfully added movie to favourites!')
       });
+  }
+
+  public rowClicked(row: ActorMovies) {
+    this.showDetails = true;
+    this.selectedActor = row;
   }
 }
