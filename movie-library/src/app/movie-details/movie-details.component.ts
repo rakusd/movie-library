@@ -9,7 +9,7 @@ import { Actor } from '../api/actor';
 })
 export class MovieDetailsComponent implements OnInit {
 
-  @Input() movieTitle: string = '';
+  @Input() movieTitle?: string = '';
 
   _actors: Actor[] = [];
   get actors(): Actor[] {
