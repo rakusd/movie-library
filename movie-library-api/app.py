@@ -50,7 +50,7 @@ def get_movies_and_actors(movie_id_df):
                 'description': actor_row['actor_description'],
                 'birthYear': actor_row['actor_birth_date'],
                 'birthPlace': actor_row['actor_birth_place']
-            } for _, actor_row in results[results['movie']==row['movie']].iterrows()]
+            } for _, actor_row in results[results['movie']==row['movie']][['actor_name','actor_description','actor_birth_date','actor_birth_place']].drop_duplicates().iterrows()]
         })
     
     return response
@@ -75,7 +75,7 @@ def get_my_movies_and_actors(movie_id_df):
                 'description': actor_row['actor_description'],
                 'birthYear': actor_row['actor_birth_date'],
                 'birthPlace': actor_row['actor_birth_place']
-            } for _, actor_row in results[results['movie']==row['movie']].iterrows()]
+            } for _, actor_row in results[results['movie']==row['movie']][['actor_name','actor_description','actor_birth_date','actor_birth_place']].drop_duplicates().iterrows()]
         })
     
     return response
