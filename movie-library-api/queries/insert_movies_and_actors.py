@@ -15,12 +15,13 @@ INSERT {{
   GRAPH <http://my.movie.library.com/library> {{
     
     <{id}> lmdb:actor ?actor ;
-                                                  purl:title ?title ;
-                                                  lmdb:initial_release_date ?release_date .
+        purl:title ?title ;
+        a lmdb:film ;
+        lmdb:initial_release_date ?release_date .
 	
 	?actor lmdb:actor_name ?actor_name ;
 		   db-prop:birthDate ?actor_birth_date ;
-           db-prop:birthPlace ?actor_birth_place ;
+       db-prop:birthPlace ?actor_birth_place ;
 		   rdfs:comment ?actor_description .
   }}											
 }}
@@ -34,9 +35,8 @@ WHERE {{
   OPTIONAL {{
   	?actor owl:sameAs ?dbpedia_ref . 
    	FILTER( STRSTARTS(STR(?dbpedia_ref), 'http://dbpedia.org/'))
-  }}
-  
-  SERVICE <http://dbpedia.org/sparql/> {{
+
+    SERVICE <http://dbpedia.org/sparql/> {{
       ?dbpedia_ref db-ont:wikiPageID ?xd .
       OPTIONAL {{
         ?dbpedia_ref rdfs:comment ?actor_description .
@@ -52,5 +52,7 @@ WHERE {{
         FILTER(LANG(?actor_birth_place) = "en")
       }}
    }}
+   
+  }}
 }}
 """

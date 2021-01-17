@@ -5,7 +5,7 @@ prefix lmdb: <http://data.linkedmdb.org/resource/movie/>
 prefix purl: <http://purl.org/dc/terms/>
 prefix owl: <http://www.w3.org/2002/07/owl#>
 
-SELECT ?movie
+SELECT DISTINCT ?movie
 WHERE {{
   ?movie a lmdb:film ;
          purl:title ?title ;

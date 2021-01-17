@@ -11,6 +11,7 @@ sparqlwrapper = "*"
 requests = "*"
 pandas = "*"
 numpy = "*"
+flask-cors = "*"
 
 [requires]
 python_version = "3.7"

@@ -21,24 +21,25 @@ export class ApiService {
     params = params.append('limit', limit.toString());
     params = params.append('offset', offset.toString());
     if (title) {
-      params = params.append('title_like', title);
+      params = params.append('movie_name', title);
     }
     if (year) {
       params = params.append('year', year.toString());
     }
 
-    return this.httpClient.get<Movie[]>(`${environment.apiUrl}/movies`, { params: params });
+    return this.httpClient.get<Movie[]>(`${environment.apiUrl}/search-movies`, { params: params });
   }
 
+  //TODO: Modify
   public searchMoviesByActor(limit: number, offset: number, name?: string): Observable<ActorMovies[]> {
     let params = new HttpParams();
     params = params.append('limit', limit.toString());
     params = params.append('offset', offset.toString());
     if (name) {
-      params = params.append('actorName_like', name);
+      params = params.append('actor', name);
     }
 
-    return this.httpClient.get<Movie[]>(`${environment.apiUrl}/actors`, { params: params })
+    return this.httpClient.get<Movie[]>(`${environment.apiUrl}/search-by-actor`, { params: params })
       .pipe(map(data => this.mapMoviesToActorMovies(data)));
   }
 
@@ -47,13 +48,13 @@ export class ApiService {
     params = params.append('limit', limit.toString());
     params = params.append('offset', offset.toString());
     if (title) {
-      params = params.append('title_like', title);
+      params = params.append('movie_name', title);
     }
     if (year) {
       params = params.append('year', year.toString());
     }
 
-    return this.httpClient.get<Movie[]>(`${environment.apiUrl}/favourites`, { params: params });
+    return this.httpClient.get<Movie[]>(`${environment.apiUrl}/my-movies`, { params: params });
   }
 
   public searchFavouritesMoviesByActor(limit: number, offset: number, name?: string): Observable<ActorMovies[]> {
@@ -61,10 +62,10 @@ export class ApiService {
     params = params.append('limit', limit.toString());
     params = params.append('offset', offset.toString());
     if (name) {
-      params = params.append('actorName_like', name);
+      params = params.append('actor', name);
     }
 
-    return this.httpClient.get<Movie[]>(`${environment.apiUrl}/favourites`, { params: params })
+    return this.httpClient.get<Movie[]>(`${environment.apiUrl}/my-movies-by-actor`, { params: params })
       .pipe(map(data => this.mapMoviesToActorMovies(data)));
   }
 
@@ -72,11 +73,11 @@ export class ApiService {
     const body = {
       'id': id
     };
-    return this.httpClient.post(`${environment.apiUrl}/favourites`, body);
+    return this.httpClient.post(`${environment.apiUrl}/add-movie`, body);
   }
 
   public removeFromFavourites(id: string): Observable<any> {
-    return this.httpClient.delete(`${environment.apiUrl}/favourites/${id}`)
+    return this.httpClient.delete(`${environment.apiUrl}/remove-movie/${id}`)
       .pipe(
         tap(() => {
           this.favouritesService.removeMovieFromFavourites(id);
