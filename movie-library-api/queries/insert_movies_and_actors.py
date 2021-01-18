@@ -21,7 +21,7 @@ INSERT DATA {{
 
 def prepare_query(movie):
   queryContent = f"""
-    <{movie['id']}> purl:title movie.title ;
+    <{movie['id']}> purl:title {movie['title']} ;
         lmdb:initial_release_date {movie['year']} ;
         a lmdb:film .
   """
