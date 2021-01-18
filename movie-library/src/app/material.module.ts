@@ -92,7 +92,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
         MatTableModule,
         MatPaginatorModule,
         MatProgressSpinnerModule,
-        MatTabsModule
+        MatTabsModule,
+        MatSlideToggleModule
     ],
     providers: [
         MatDatepickerModule,

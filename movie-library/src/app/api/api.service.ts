@@ -16,7 +16,7 @@ export class ApiService {
     private httpClient: HttpClient,
     private favouritesService: FavouritesSyncService) { }
 
-  public searchMovies(limit: number, offset: number, title?: string, year?: number): Observable<Movie[]> {
+  public searchMovies(limit: number, offset: number, title?: string, year?: number, useSlowQuery?: boolean): Observable<Movie[]> {
     let params = new HttpParams();
     params = params.append('limit', limit.toString());
     params = params.append('offset', offset.toString());
@@ -26,18 +26,20 @@ export class ApiService {
     if (year) {
       params = params.append('year', year.toString());
     }
-
+    params = params.append('use_slow_query', useSlowQuery? '1' : '0');
+    
     return this.httpClient.get<Movie[]>(`${environment.apiUrl}/search-movies`, { params: params });
   }
 
   //TODO: Modify
-  public searchMoviesByActor(limit: number, offset: number, name?: string): Observable<ActorMovies[]> {
+  public searchMoviesByActor(limit: number, offset: number, name?: string, useSlowQuery?: boolean): Observable<ActorMovies[]> {
     let params = new HttpParams();
     params = params.append('limit', limit.toString());
     params = params.append('offset', offset.toString());
     if (name) {
       params = params.append('actor', name);
     }
+    params = params.append('use_slow_query', useSlowQuery? '1' : '0');
 
     return this.httpClient.get<Movie[]>(`${environment.apiUrl}/search-by-actor`, { params: params })
       .pipe(map(data => this.mapMoviesToActorMovies(data, name)));
@@ -69,16 +71,18 @@ export class ApiService {
       .pipe(map(data => this.mapMoviesToActorMovies(data, name)));
   }
 
-  public addToFavouriteMovies(id: string): Observable<any> {
+  public addToFavouriteMovies(movie: Movie): Observable<any> {
     const body = {
-      'id': id
+      'movie': movie
     };
     return this.httpClient.post(`${environment.apiUrl}/add-movie`, body)
-    .pipe(
-      tap(() => {
-        this.favouritesService.addMovieToFavourites(id);
-      })
-    )
+      .pipe(
+        tap(() => {
+          if (movie.id) {
+            this.favouritesService.addMovieToFavourites(movie.id);
+          }
+        })
+      )
   }
 
   public removeFromFavourites(id: string): Observable<any> {
@@ -110,6 +114,7 @@ export class ApiService {
           id: movie.id,
           title: movie.title,
           year: movie.year,
+          actorId: actor.id,
           name: actor.name,
           description: actor.description,
           birthYear: actor.birthYear,
