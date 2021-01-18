@@ -16,24 +16,39 @@ INSERT DATA {{
   GRAPH <http://my.movie.library.com/library> {{
     
     {content}								
-}}
+}} }}
 """
 
 def prepare_query(movie):
+  if movie['title']:
+    movie['title'] = movie['title'].replace("'", r"\'")
   queryContent = f"""
-    <{movie['id']}> purl:title {movie['title']} ;
-        lmdb:initial_release_date {movie['year']} ;
+    <{movie['id']}> purl:title "{movie['title']}" ;
+        lmdb:initial_release_date "{movie['year']}" ;
         a lmdb:film .
   """
 
   for actor in movie['actors']:
+    if actor['description']:
+      actor['description'] = actor['description'].replace("'", r"\'")
+
+    if actor['name']:
+      actor['name'] = actor['name'].replace("'", r"\'")
+
+    if actor['birthPlace']:
+      actor['birthPlace'] = actor['birthPlace'].replace("'", r"\'")
+
     queryContent += f"""
       \n
+
+      <{movie['id']}> lmdb:actor <{actor['id']}> .
+
       <{actor['id']}> a lmdb:actor ;
-          lmdb:actor_name {actor['name']} ;
-          dp-prop:birthDate {actor['birthYear']} ;
-          db-prop:birthPlace {actor['birthPlace']} ;
-          rdfs:comment {actor['description']} .
+          lmdb:actor_name "{actor['name']}" ;
+          {f"db-prop:birthDate '{actor['birthYear']}' ;" if actor['birthYear'] else ""}
+          {f"db-prop:birthPlace '{actor['birthPlace']}' ;" if actor['birthPlace'] else ""}
+          {f"rdfs:comment '{actor['description']}'" if actor['description'] else ""}
+          .
     """
 
   return QUERY.format(content=queryContent)

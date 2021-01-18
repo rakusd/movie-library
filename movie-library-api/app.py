@@ -45,12 +45,12 @@ def get_movies_and_actors(movie_id_df, use_slow_query):
         response.append({
             'id': row['movie'],
             'title': row['title'],
-            'year': row['release_date'],
+            'year': str(row['release_date']) if row['release_date'] else None,
             'actors': [{
                 'id': actor_row['actor'],
                 'name': actor_row['actor_name'],
                 'description': actor_row['actor_description'],
-                'birthYear': actor_row['actor_birth_date'],
+                'birthYear': str(actor_row['actor_birth_date']) if actor_row['actor_birth_date'] else None,
                 'birthPlace': actor_row['actor_birth_place']
             } for _, actor_row in results[results['movie']==row['movie']][['actor_name','actor_description','actor_birth_date','actor_birth_place', 'actor']].drop_duplicates().iterrows()]
         })
@@ -71,12 +71,12 @@ def get_my_movies_and_actors(movie_id_df):
         response.append({
             'id': row['movie'],
             'title': row['title'],
-            'year': row['release_date'],
+            'year': str(row['release_date']) if row['release_date'] else None,
             'actors': [{
                 'id': actor_row['actor'],
                 'name': actor_row['actor_name'],
                 'description': actor_row['actor_description'],
-                'birthYear': actor_row['actor_birth_date'],
+                'birthYear': str(actor_row['actor_birth_date']) if actor_row['actor_birth_date'] else None,
                 'birthPlace': actor_row['actor_birth_place']
             } for _, actor_row in results[results['movie']==row['movie']][['actor_name','actor_description','actor_birth_date','actor_birth_place', 'actor']].drop_duplicates().iterrows()]
         })
@@ -128,7 +128,7 @@ def search_by_actor():
     actor = param_helpers.ensure_string(request.args.get('actor'))
     limit = request.args.get('limit', 20, int)
     offset = request.args.get('offset', 0, int)
-    use_slow_query = request.args.get('use_slow_query', False, bool)
+    use_slow_query = bool(request.args.get('use_slow_query', 0, int))
 
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
     sparql.setQuery(fmiba.QUERY.format(

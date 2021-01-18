@@ -8,6 +8,7 @@ prefix owl: <http://www.w3.org/2002/07/owl#>
 SELECT DISTINCT ?movie
 WHERE {{
   ?movie a lmdb:film ;
+         lmdb:actor ?xd ;
          purl:title ?title ;
          lmdb:initial_release_date ?release_date .
 
