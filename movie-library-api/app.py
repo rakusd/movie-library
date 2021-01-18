@@ -162,10 +162,10 @@ def my_movies_by_actor():
 @app.route('/add-movie', methods=["POST"])
 @cross_origin()
 def add_movie():
-    id = param_helpers.ensure_string(request.json['id'])
+    movie = request.json['movie']
     sparql = SPARQLWrapper(SPARQL_UPDATE_ENDPOINT)
     sparql.method = 'POST'
-    sparql.setQuery(imaa.QUERY.format(id=id))
+    sparql.setQuery(imaa.prepare_query(movie))
     sparql.query()
 
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
