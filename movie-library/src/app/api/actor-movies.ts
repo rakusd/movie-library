@@ -1,3 +1,5 @@
+import { Movie } from "./movie";
+
 export class ActorMovies {
     // Movie
     id?: string;
@@ -9,4 +11,7 @@ export class ActorMovies {
     description?: string;
     birthYear?: string;
     birthPlace? :string;
+
+    // Original data
+    movie?: Movie;
 }

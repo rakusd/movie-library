@@ -40,7 +40,7 @@ export class ApiService {
     }
 
     return this.httpClient.get<Movie[]>(`${environment.apiUrl}/search-by-actor`, { params: params })
-      .pipe(map(data => this.mapMoviesToActorMovies(data)));
+      .pipe(map(data => this.mapMoviesToActorMovies(data, name)));
   }
 
   public searchFavouritesMovies(limit: number, offset: number, title?: string, year?: number): Observable<Movie[]> {
@@ -66,7 +66,7 @@ export class ApiService {
     }
 
     return this.httpClient.get<Movie[]>(`${environment.apiUrl}/my-movies-by-actor`, { params: params })
-      .pipe(map(data => this.mapMoviesToActorMovies(data)));
+      .pipe(map(data => this.mapMoviesToActorMovies(data, name)));
   }
 
   public addToFavouriteMovies(id: string): Observable<any> {
@@ -85,14 +85,19 @@ export class ApiService {
       )
   }
 
-  private mapMoviesToActorMovies(data: Movie[]): ActorMovies[] {
+  private mapMoviesToActorMovies(data: Movie[], name?: string): ActorMovies[] {
     const newData: ActorMovies[] = [];
+    const nameLowerCase = name?.toLowerCase();
 
     for (const movie of data) {
       if (!movie.actors) {
         continue;
       }
       for (const actor of movie.actors) {
+        if (nameLowerCase && !actor.name?.toLowerCase().includes(nameLowerCase)) {
+          continue;
+        }
+
         newData.push({
           id: movie.id,
           title: movie.title,
@@ -100,7 +105,8 @@ export class ApiService {
           name: actor.name,
           description: actor.description,
           birthYear: actor.birthYear,
-          birthPlace: actor.birthPlace
+          birthPlace: actor.birthPlace,
+          movie: movie
         });
       }
     }
