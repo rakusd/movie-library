@@ -28,14 +28,15 @@
 
             <ng-container matColumnDef="title">
                 <th mat-header-cell *matHeaderCellDef> Played in </th>
-                <td mat-cell *matCellDef="let element"> {{element.title}} </td>
+                <td mat-cell *matCellDef="let element"> {{element.title}} (released {{element.year}}) </td>
             </ng-container>
 
             <ng-container matColumnDef="add">
                 <th mat-header-cell *matHeaderCellDef></th>
                 <td mat-cell *matCellDef="let element">
-                    <button mat-raised-button color="primary" (click)="addToFavourites(element.id)">Add movie to
-                        favourites</button>
+                    <button mat-icon-button color="primary" (click)="$event.stopPropagation(); addToFavourites(element);">
+                        <mat-icon [style.color]="element.movie.favourite ? 'yellow' : undefined">star_border</mat-icon>
+                    </button>
                 </td>
             </ng-container>
 

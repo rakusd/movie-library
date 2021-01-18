@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { FavouritesRemovalSyncService } from '../favourites/favourites-removal-sync.service';
+import { FavouritesSyncService } from '../favourites/favourites-sync.service';
 import { ActorMovies } from './actor-movies';
 import { Movie } from './movie';
 
@@ -14,7 +14,7 @@ export class ApiService {
 
   constructor(
     private httpClient: HttpClient,
-    private favouritesService: FavouritesRemovalSyncService) { }
+    private favouritesService: FavouritesSyncService) { }
 
   public searchMovies(limit: number, offset: number, title?: string, year?: number): Observable<Movie[]> {
     let params = new HttpParams();
@@ -73,11 +73,19 @@ export class ApiService {
     const body = {
       'id': id
     };
-    return this.httpClient.post(`${environment.apiUrl}/add-movie`, body);
+    return this.httpClient.post(`${environment.apiUrl}/add-movie`, body)
+    .pipe(
+      tap(() => {
+        this.favouritesService.addMovieToFavourites(id);
+      })
+    )
   }
 
   public removeFromFavourites(id: string): Observable<any> {
-    return this.httpClient.delete(`${environment.apiUrl}/remove-movie/${id}`)
+    let params = new HttpParams();
+    params = params.append('id', id);
+
+    return this.httpClient.delete(`${environment.apiUrl}/remove-movie`, { params: params })
       .pipe(
         tap(() => {
           this.favouritesService.removeMovieFromFavourites(id);

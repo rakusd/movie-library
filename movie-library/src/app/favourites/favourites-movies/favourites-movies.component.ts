@@ -7,7 +7,7 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators'
 import { SnackbarService } from '../../snackbar.service';
 import { environment } from '../../../environments/environment';
 import { Actor } from 'src/app/api/actor';
-import { FavouritesRemovalSyncService } from '../favourites-removal-sync.service';
+import { FavouritesSyncService } from '../favourites-sync.service';
 import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
@@ -39,7 +39,7 @@ export class FavouritesMoviesComponent implements OnInit, AfterViewInit, OnDestr
   constructor(
     private api: ApiService,
     private snackBarService: SnackbarService,
-    private favouritesService: FavouritesRemovalSyncService) { }
+    private favouritesService: FavouritesSyncService) { }
 
   ngOnInit(): void {
     this.loadingData = true;

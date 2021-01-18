@@ -8,6 +8,7 @@ import { SnackbarService } from '../../snackbar.service';
 import { environment } from '../../../environments/environment';
 import { Actor } from 'src/app/api/actor';
 import { MatPaginator } from '@angular/material/paginator';
+import { FavouritesSyncService } from 'src/app/favourites/favourites-sync.service';
 
 @Component({
   selector: 'app-explore-movies',
@@ -35,13 +36,16 @@ export class ExploreMoviesComponent implements OnInit, AfterViewInit, OnDestroy 
   yearFilter?: number;
   offset = 0;
 
+  private favouriteMovies: Set<string> = new Set<string>();
+
   constructor(
     private api: ApiService,
-    private snackBarService: SnackbarService) { }
+    private snackBarService: SnackbarService,
+    private favouritesService: FavouritesSyncService) { }
 
   ngOnInit(): void {
     this.loadingData = true;
-    this.getMovies();
+    this.initComponent();
 
     this.titleFilterChanged$.pipe(
       debounceTime(environment.debounceTime),
@@ -59,6 +63,16 @@ export class ExploreMoviesComponent implements OnInit, AfterViewInit, OnDestroy 
     ).subscribe((res) => {
       this.getMovies();
     });
+
+    this.favouritesService.movieAddedToFavourites$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((id) => {
+        for (const el of this.dataSource.data) {
+          if (el.id === id) {
+            el.favourite = true;
+          }
+        }
+      });
   }
 
   ngAfterViewInit() {
@@ -76,6 +90,14 @@ export class ExploreMoviesComponent implements OnInit, AfterViewInit, OnDestroy 
     this.api.searchMovies(environment.pageSize, this.offset, this.titleFilter, this.yearFilter)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
+        for (const it of data) {
+          if (it.id) {
+            if (this.favouriteMovies.has(it.id)) {
+              it.favourite = true;
+            }
+          }
+        }
+
         this.dataSource.data = data;
         this.loadingData = false;
       },
@@ -93,8 +115,12 @@ export class ExploreMoviesComponent implements OnInit, AfterViewInit, OnDestroy 
     this.yearFilterChanged$.next(this.yearFilter);
   }
 
-  public addToFavourites(id: string) {
-    this.api.addToFavouriteMovies(id)
+  public addToFavourites(movie: Movie) {
+    if (!movie.id || movie.favourite) {
+      return;
+    }
+
+    this.api.addToFavouriteMovies(movie.id)
       .subscribe(_ => {
         this.snackBarService.showMessage('Successfully added movie to favourites!')
       });
@@ -104,5 +130,21 @@ export class ExploreMoviesComponent implements OnInit, AfterViewInit, OnDestroy 
     this.showDetails = true;
     this.selectedMovie = row;
     this.selectedMovieActors = row.actors || [];
+  }
+
+  private initComponent() {
+    this.api.searchFavouritesMovies(environment.bigPageSize, 0)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        for (const item of data) {
+          if (item.id) {
+            this.favouriteMovies.add(item.id);
+          }
+        }
+        this.getMovies();
+      },
+        error => {
+          console.log(error);
+        });
   }
 }
