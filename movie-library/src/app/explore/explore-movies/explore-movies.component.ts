@@ -36,7 +36,7 @@ export class ExploreMoviesComponent implements OnInit, AfterViewInit, OnDestroy 
   titleFilter: string = '';
   yearFilter?: number;
   offset = 0;
-  useSlowQuery = true;
+  useSlowQuery = false;
 
   private favouriteMovies: Set<string> = new Set<string>();
 

@@ -32,7 +32,7 @@ export class ExploreMovieActorsComponent implements OnInit, AfterViewInit, OnDes
 
   actorName: string = '';
   offset = 0;
-  useSlowQuery = true;
+  useSlowQuery = false;
 
   private favouriteMovies: Set<string> = new Set<string>();
 
