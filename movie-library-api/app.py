@@ -30,11 +30,12 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-def get_movies_and_actors(movie_id_df):
+def get_movies_and_actors(movie_id_df, use_slow_query):
     movie_ids_str = " ".join("(<" + movie_id_df['movie'].values + ">)")
 
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
-    sparql.setQuery(fm.QUERY.format(movie_ids=movie_ids_str))
+    query_string = fm.SLOW_QUERY if use_slow_query else fm.FAST_QUERY
+    sparql.setQuery(query_string.format(movie_ids=movie_ids_str))
     
     results = query_and_get_df(sparql)
     unique_movies = results[['movie','title','release_date']].drop_duplicates()
@@ -89,6 +90,7 @@ def search_movies():
     year = param_helpers.ensure_int(request.args.get('year'), None)
     limit = param_helpers.ensure_int(request.args.get('limit'), 20)
     offset = param_helpers.ensure_int(request.args.get('offset'), 0)
+    use_slow_query = param_helpers.ensure_boolean(request.args.get('use_slow_query'))
 
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
     sparql.setQuery(fmidbm.QUERY.format(
@@ -99,7 +101,7 @@ def search_movies():
     
     movie_id_df = query_and_get_df(sparql)
 
-    return jsonify(get_movies_and_actors(movie_id_df))
+    return jsonify(get_movies_and_actors(movie_id_df, use_slow_query))
 
 @app.route('/my-movies')
 @cross_origin()
@@ -126,6 +128,7 @@ def search_by_actor():
     actor = param_helpers.ensure_string(request.args.get('actor'))
     limit = param_helpers.ensure_int(request.args.get('limit'), 20)
     offset = param_helpers.ensure_int(request.args.get('offset'), 0)
+    use_slow_query = param_helpers.ensure_boolean(request.args.get('use_slow_query'))
 
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
     sparql.setQuery(fmiba.QUERY.format(
@@ -134,9 +137,9 @@ def search_by_actor():
         offset=offset
     ))
 
-    movie_id_df = query_and_get_df(sparql)
+    movie_id_df = query_and_get_df(sparql, use_slow_query)
 
-    return jsonify(get_movies_and_actors(movie_id_df))
+    return jsonify(get_movies_and_actors(movie_id_df, use_slow_query))
 
 @app.route('/my-movies-by-actor')
 @cross_origin()
