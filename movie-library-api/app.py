@@ -84,9 +84,9 @@ def get_my_movies_and_actors(movie_id_df):
 @cross_origin()
 def search_movies():
     movie_name = param_helpers.ensure_string(request.args.get('movie_name'), None)
-    year = param_helpers.ensure_int(request.args.get('year'), None)
-    limit = param_helpers.ensure_int(request.args.get('limit'), 20)
-    offset = param_helpers.ensure_int(request.args.get('offset'), 0)
+    year = request.args.get('year', None, int)
+    limit = request.args.get('limit', 20, int)
+    offset = request.args.get('offset', 0, int)
 
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
     sparql.setQuery(fmidbm.QUERY.format(
@@ -103,9 +103,9 @@ def search_movies():
 @cross_origin()
 def my_movies():
     movie_name = param_helpers.ensure_string(request.args.get('movie_name'), None)
-    year = param_helpers.ensure_int(request.args.get('year'), None)
-    limit = param_helpers.ensure_int(request.args.get('limit'), 20)
-    offset = param_helpers.ensure_int(request.args.get('offset'), 0)
+    year = request.args.get('year', None, int)
+    limit = request.args.get('limit', 20, int)
+    offset = request.args.get('offset', 0, int)
 
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
     sparql.setQuery(mmidbm.QUERY.format(
@@ -122,8 +122,8 @@ def my_movies():
 @cross_origin()
 def search_by_actor():
     actor = param_helpers.ensure_string(request.args.get('actor'))
-    limit = param_helpers.ensure_int(request.args.get('limit'), 20)
-    offset = param_helpers.ensure_int(request.args.get('offset'), 0)
+    limit = request.args.get('limit', 20, int)
+    offset = request.args.get('offset', 0, int)
 
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
     sparql.setQuery(fmiba.QUERY.format(
@@ -140,8 +140,8 @@ def search_by_actor():
 @cross_origin()
 def my_movies_by_actor():
     actor = param_helpers.ensure_string(request.args.get('actor'))
-    limit = param_helpers.ensure_int(request.args.get('limit'), 20)
-    offset = param_helpers.ensure_int(request.args.get('offset'), 0)
+    limit = request.args.get('limit', 20, int)
+    offset = request.args.get('offset', 0, int)
 
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
     sparql.setQuery(mmiba.QUERY.format(
