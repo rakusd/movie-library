@@ -168,7 +168,7 @@ def add_movie():
 @app.route('/remove-movie', methods=["DELETE"])
 @cross_origin()
 def remove_movie():
-    id = param_helpers.ensure_string(request.json['id'])
+    id = param_helpers.ensure_string(request.args.get('id'))
 
     # Check if actors played in other movies
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
@@ -182,7 +182,7 @@ def remove_movie():
     sparql.query()
 
     # Remove actors
-    actors_to_remove = actors_df[[actors_df]['count'] == 1]['actor'].values
+    actors_to_remove = actors_df[actors_df['count'] == 1]['actor'].values
     if len(actors_to_remove) > 0 :
         actor_ids_str = " ".join("(<" + actors_to_remove + ">)")
         sparql = SPARQLWrapper(SPARQL_UPDATE_ENDPOINT)
