@@ -5,4 +5,6 @@ export class Movie {
     title?: string;
     year?: string;
     actors?: Actor[];
+
+    favourite?: boolean = false;
 }

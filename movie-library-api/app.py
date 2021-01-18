@@ -30,11 +30,12 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-def get_movies_and_actors(movie_id_df):
+def get_movies_and_actors(movie_id_df, use_slow_query):
     movie_ids_str = " ".join("(<" + movie_id_df['movie'].values + ">)")
 
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
-    sparql.setQuery(fm.QUERY.format(movie_ids=movie_ids_str))
+    query_string = fm.SLOW_QUERY if use_slow_query else fm.FAST_QUERY
+    sparql.setQuery(query_string.format(movie_ids=movie_ids_str))
     
     results = query_and_get_df(sparql)
     unique_movies = results[['movie','title','release_date']].drop_duplicates()
@@ -46,6 +47,7 @@ def get_movies_and_actors(movie_id_df):
             'title': row['title'],
             'year': row['release_date'],
             'actors': [{
+                'id': actor_row['actor'],
                 'name': actor_row['actor_name'],
                 'description': actor_row['actor_description'],
                 'birthYear': actor_row['actor_birth_date'],
@@ -71,6 +73,7 @@ def get_my_movies_and_actors(movie_id_df):
             'title': row['title'],
             'year': row['release_date'],
             'actors': [{
+                'id': actor_row['actor'],
                 'name': actor_row['actor_name'],
                 'description': actor_row['actor_description'],
                 'birthYear': actor_row['actor_birth_date'],
@@ -84,9 +87,10 @@ def get_my_movies_and_actors(movie_id_df):
 @cross_origin()
 def search_movies():
     movie_name = param_helpers.ensure_string(request.args.get('movie_name'), None)
-    year = param_helpers.ensure_int(request.args.get('year'), None)
-    limit = param_helpers.ensure_int(request.args.get('limit'), 20)
-    offset = param_helpers.ensure_int(request.args.get('offset'), 0)
+    year = request.args.get('year', None, int)
+    limit = request.args.get('limit', 20, int)
+    offset = request.args.get('offset', 0, int)
+    use_slow_query = request.args.get('use_slow_query', False, bool)
 
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
     sparql.setQuery(fmidbm.QUERY.format(
@@ -97,15 +101,15 @@ def search_movies():
     
     movie_id_df = query_and_get_df(sparql)
 
-    return jsonify(get_movies_and_actors(movie_id_df))
+    return jsonify(get_movies_and_actors(movie_id_df, use_slow_query))
 
 @app.route('/my-movies')
 @cross_origin()
 def my_movies():
     movie_name = param_helpers.ensure_string(request.args.get('movie_name'), None)
-    year = param_helpers.ensure_int(request.args.get('year'), None)
-    limit = param_helpers.ensure_int(request.args.get('limit'), 20)
-    offset = param_helpers.ensure_int(request.args.get('offset'), 0)
+    year = request.args.get('year', None, int)
+    limit = request.args.get('limit', 20, int)
+    offset = request.args.get('offset', 0, int)
 
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
     sparql.setQuery(mmidbm.QUERY.format(
@@ -122,8 +126,9 @@ def my_movies():
 @cross_origin()
 def search_by_actor():
     actor = param_helpers.ensure_string(request.args.get('actor'))
-    limit = param_helpers.ensure_int(request.args.get('limit'), 20)
-    offset = param_helpers.ensure_int(request.args.get('offset'), 0)
+    limit = request.args.get('limit', 20, int)
+    offset = request.args.get('offset', 0, int)
+    use_slow_query = request.args.get('use_slow_query', False, bool)
 
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
     sparql.setQuery(fmiba.QUERY.format(
@@ -132,16 +137,16 @@ def search_by_actor():
         offset=offset
     ))
 
-    movie_id_df = query_and_get_df(sparql)
+    movie_id_df = query_and_get_df(sparql, use_slow_query)
 
-    return jsonify(get_movies_and_actors(movie_id_df))
+    return jsonify(get_movies_and_actors(movie_id_df, use_slow_query))
 
 @app.route('/my-movies-by-actor')
 @cross_origin()
 def my_movies_by_actor():
     actor = param_helpers.ensure_string(request.args.get('actor'))
-    limit = param_helpers.ensure_int(request.args.get('limit'), 20)
-    offset = param_helpers.ensure_int(request.args.get('offset'), 0)
+    limit = request.args.get('limit', 20, int)
+    offset = request.args.get('offset', 0, int)
 
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
     sparql.setQuery(mmiba.QUERY.format(
@@ -157,10 +162,10 @@ def my_movies_by_actor():
 @app.route('/add-movie', methods=["POST"])
 @cross_origin()
 def add_movie():
-    id = param_helpers.ensure_string(request.json['id'])
+    movie = request.json['movie']
     sparql = SPARQLWrapper(SPARQL_UPDATE_ENDPOINT)
     sparql.method = 'POST'
-    sparql.setQuery(imaa.QUERY.format(id=id))
+    sparql.setQuery(imaa.prepare_query(movie))
     sparql.query()
 
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
@@ -168,7 +173,7 @@ def add_movie():
 @app.route('/remove-movie', methods=["DELETE"])
 @cross_origin()
 def remove_movie():
-    id = param_helpers.ensure_string(request.json['id'])
+    id = param_helpers.ensure_string(request.args.get('id'))
 
     # Check if actors played in other movies
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
@@ -182,7 +187,7 @@ def remove_movie():
     sparql.query()
 
     # Remove actors
-    actors_to_remove = actors_df[[actors_df]['count'] == 1]['actor'].values
+    actors_to_remove = actors_df[actors_df['count'] == 1]['actor'].values
     if len(actors_to_remove) > 0 :
         actor_ids_str = " ".join("(<" + actors_to_remove + ">)")
         sparql = SPARQLWrapper(SPARQL_UPDATE_ENDPOINT)

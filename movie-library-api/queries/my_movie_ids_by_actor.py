@@ -20,5 +20,6 @@ WHERE {{
   
   FILTER (CONTAINS(LCASE(?actor_name), LCASE('{actor}'))) 
 }} }}
+ORDER BY ?movie
 LIMIT {limit} OFFSET {offset}
 """
