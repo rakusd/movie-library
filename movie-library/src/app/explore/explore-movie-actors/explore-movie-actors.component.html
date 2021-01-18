@@ -1,4 +1,3 @@
-
 <div fxLayout fxLayoutAlign="start center" fxLayoutGap="10px">
     <mat-form-field fxFlex="15%">
         <input matInput type="text" (keyup)="filter($event)" placeholder="Filter actor name">
@@ -7,7 +6,11 @@
 
 <div fxLayout="row" fxLayoutGap="10px">
     <div fxFlex="70">
-        <table mat-table [dataSource]="dataSource" class="table mat-elevation-z8">
+        <div *ngIf="loadingData"
+            style="display: flex; justify-content: center; align-items: center;" class="grey-color">
+            <mat-progress-spinner style="margin: 20px;" color="primary" mode="indeterminate"></mat-progress-spinner>
+        </div>
+        <table *ngIf="!loadingData" mat-table [dataSource]="dataSource" class="table mat-elevation-z8">
             <ng-container matColumnDef="actor">
                 <th mat-header-cell *matHeaderCellDef> Actor name </th>
                 <td mat-cell *matCellDef="let element"> {{element.name}} </td>
@@ -31,25 +34,19 @@
             <ng-container matColumnDef="add">
                 <th mat-header-cell *matHeaderCellDef></th>
                 <td mat-cell *matCellDef="let element">
-                    <button mat-raised-button color="primary" (click)="addToFavourites(element.id)">Add movie to favourites</button>
+                    <button mat-raised-button color="primary" (click)="addToFavourites(element.id)">Add movie to
+                        favourites</button>
                 </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="rowClicked(row)"
-                matTooltip="Click to view actor details"
-                matTooltipShowDelay="600"
-                matTooltipPosition="right"
-            ></tr>
+                matTooltip="Click to view actor details" matTooltipShowDelay="600" matTooltipPosition="right"></tr>
         </table>
+        <mat-paginator [pageSizeOptions]="[10, 20]" showFirstLastButtons></mat-paginator>
     </div>
 
     <div fxFlex="30">
         <app-actor-details *ngIf="showDetails" class="actor-details" [actor]="selectedActor"></app-actor-details>
     </div>
-</div>
-
-
-<div *ngIf="loadingData" style="display: flex; justify-content: center; align-items: center; background: white;">
-    <mat-progress-spinner style="margin: 20px;" color="primary" mode="indeterminate"></mat-progress-spinner>
 </div>

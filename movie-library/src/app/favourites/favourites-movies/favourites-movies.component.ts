@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subject } from 'rxjs';
 import { ApiService } from '../../api/api.service';
@@ -8,13 +8,17 @@ import { SnackbarService } from '../../snackbar.service';
 import { environment } from '../../../environments/environment';
 import { Actor } from 'src/app/api/actor';
 import { FavouritesRemovalSyncService } from '../favourites-removal-sync.service';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-favourites-movies',
   templateUrl: './favourites-movies.component.html',
   styleUrls: ['./favourites-movies.component.scss']
 })
-export class FavouritesMoviesComponent implements OnInit, OnDestroy {
+export class FavouritesMoviesComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  @ViewChild(MatPaginator)
+  paginator!: MatPaginator;
 
   public displayedColumns = ['title', 'year', 'remove'];
   public dataSource = new MatTableDataSource<Movie>();
@@ -66,6 +70,10 @@ export class FavouritesMoviesComponent implements OnInit, OnDestroy {
         this.showDetails = false;
       }
     });
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
   }
 
   ngOnDestroy(): void {

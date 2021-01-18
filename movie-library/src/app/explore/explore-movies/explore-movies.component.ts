@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subject } from 'rxjs';
 import { ApiService } from '../../api/api.service';
@@ -7,13 +7,17 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators'
 import { SnackbarService } from '../../snackbar.service';
 import { environment } from '../../../environments/environment';
 import { Actor } from 'src/app/api/actor';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-explore-movies',
   templateUrl: './explore-movies.component.html',
   styleUrls: ['./explore-movies.component.scss']
 })
-export class ExploreMoviesComponent implements OnInit, OnDestroy {
+export class ExploreMoviesComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  @ViewChild(MatPaginator)
+  paginator!: MatPaginator;
 
   public displayedColumns = ['title', 'year', 'add'];
   public dataSource = new MatTableDataSource<Movie>();
@@ -55,6 +59,10 @@ export class ExploreMoviesComponent implements OnInit, OnDestroy {
     ).subscribe((res) => {
       this.getMovies();
     });
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
   }
 
   ngOnDestroy(): void {
