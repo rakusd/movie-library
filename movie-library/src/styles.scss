@@ -1,0 +1,13 @@
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-row:hover {
+    background-color: grey;
+    cursor: pointer;
+}
+
+.grey-color {
+    background: rgb(80,80,80);
+}

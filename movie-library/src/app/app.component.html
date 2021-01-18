@@ -1,0 +1,57 @@
+<mat-sidenav-container>
+  <mat-sidenav #sidenav role="navigation">
+    <mat-nav-list>
+      <a mat-list-item routerLink="/">
+        <mat-icon class="icon">home</mat-icon>
+        <span class="label">Home</span>
+      </a>
+      <a mat-list-item routerLink="/explore">
+        <mat-icon class="icon">dashboard</mat-icon>
+        <span class="label">Explore</span>
+      </a>
+      <a mat-list-item routerLink="/favourites">
+        <mat-icon class="icon">stars</mat-icon>
+        <span class="label">Favourites</span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      <div fxHide.gt-xs>
+        <button mat-icon-button (click)="sidenav.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+      </div>
+      <div>
+        <a routerLink="/">
+          Movie library
+        </a>
+      </div>
+      <div fxFlex fxLayout fxLayoutAlign="flex-end" fxHide.xs>
+        <ul fxLayout fxLayoutGap="20px" class="navigation-items">
+          <li>
+            <a routerLink="/">
+              <mat-icon class="icon">home</mat-icon>
+              <span class="label">Home</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/explore">
+              <mat-icon class="icon">dashboard</mat-icon>
+              <span class="label">Explore</span>
+            </a>
+          </li>
+          <li>
+            <a routerLink="/favourites">
+              <mat-icon class="icon">stars</mat-icon>
+              <span class="label">Favourites</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </mat-toolbar>
+    <main style="width:95%; margin: auto; margin-top: 20px;">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

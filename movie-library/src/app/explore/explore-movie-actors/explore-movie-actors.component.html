@@ -1,0 +1,55 @@
+<mat-slide-toggle class="toggle" color="primary" (change)="querySpeedChanged($event)" [checked]="useSlowQuery">Use slow query</mat-slide-toggle>
+
+<div fxLayout fxLayoutAlign="start center" fxLayoutGap="10px">
+    <mat-form-field fxFlex="15%">
+        <input matInput type="text" (keyup)="filter($event)" placeholder="Filter actor name">
+    </mat-form-field>
+</div>
+
+<div fxLayout="row" fxLayoutGap="10px">
+    <div fxFlex="70">
+        <div *ngIf="loadingData"
+            style="display: flex; justify-content: center; align-items: center;" class="grey-color">
+            <mat-progress-spinner style="margin: 20px;" color="primary" mode="indeterminate"></mat-progress-spinner>
+        </div>
+        <table *ngIf="!loadingData" mat-table [dataSource]="dataSource" class="table mat-elevation-z8">
+            <ng-container matColumnDef="actor">
+                <th mat-header-cell *matHeaderCellDef> Actor name </th>
+                <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="birthYear">
+                <th mat-header-cell *matHeaderCellDef> Birth year </th>
+                <td mat-cell *matCellDef="let element"> {{element.birthYear}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="birthPlace">
+                <th mat-header-cell *matHeaderCellDef> Birth place </th>
+                <td mat-cell *matCellDef="let element"> {{element.birthPlace}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="title">
+                <th mat-header-cell *matHeaderCellDef> Played in </th>
+                <td mat-cell *matCellDef="let element"> {{element.title}} (released {{element.year?.substr(0, 4)}}) </td>
+            </ng-container>
+
+            <ng-container matColumnDef="add">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let element">
+                    <button mat-icon-button color="primary" (click)="$event.stopPropagation(); addToFavourites(element);">
+                        <mat-icon [style.color]="element.movie.favourite ? 'yellow' : undefined">star_border</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="rowClicked(row)"
+                matTooltip="Click to view actor details" matTooltipShowDelay="600" matTooltipPosition="right"></tr>
+        </table>
+        <mat-paginator [pageSizeOptions]="[10, 20]" showFirstLastButtons></mat-paginator>
+    </div>
+
+    <div fxFlex="30">
+        <app-actor-details *ngIf="showDetails" class="actor-details" [actor]="selectedActor"></app-actor-details>
+    </div>
+</div>
