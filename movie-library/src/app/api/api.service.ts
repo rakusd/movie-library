@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { FavouritesRemovalSyncService } from '../favourites/favourites-removal-sync.service';
+import { FavouritesSyncService } from '../favourites/favourites-sync.service';
 import { ActorMovies } from './actor-movies';
 import { Movie } from './movie';
 
@@ -14,7 +14,7 @@ export class ApiService {
 
   constructor(
     private httpClient: HttpClient,
-    private favouritesService: FavouritesRemovalSyncService) { }
+    private favouritesService: FavouritesSyncService) { }
 
   public searchMovies(limit: number, offset: number, title?: string, year?: number): Observable<Movie[]> {
     let params = new HttpParams();
@@ -40,7 +40,7 @@ export class ApiService {
     }
 
     return this.httpClient.get<Movie[]>(`${environment.apiUrl}/search-by-actor`, { params: params })
-      .pipe(map(data => this.mapMoviesToActorMovies(data)));
+      .pipe(map(data => this.mapMoviesToActorMovies(data, name)));
   }
 
   public searchFavouritesMovies(limit: number, offset: number, title?: string, year?: number): Observable<Movie[]> {
@@ -66,18 +66,26 @@ export class ApiService {
     }
 
     return this.httpClient.get<Movie[]>(`${environment.apiUrl}/my-movies-by-actor`, { params: params })
-      .pipe(map(data => this.mapMoviesToActorMovies(data)));
+      .pipe(map(data => this.mapMoviesToActorMovies(data, name)));
   }
 
   public addToFavouriteMovies(id: string): Observable<any> {
     const body = {
       'id': id
     };
-    return this.httpClient.post(`${environment.apiUrl}/add-movie`, body);
+    return this.httpClient.post(`${environment.apiUrl}/add-movie`, body)
+    .pipe(
+      tap(() => {
+        this.favouritesService.addMovieToFavourites(id);
+      })
+    )
   }
 
   public removeFromFavourites(id: string): Observable<any> {
-    return this.httpClient.delete(`${environment.apiUrl}/remove-movie/${id}`)
+    let params = new HttpParams();
+    params = params.append('id', id);
+
+    return this.httpClient.delete(`${environment.apiUrl}/remove-movie`, { params: params })
       .pipe(
         tap(() => {
           this.favouritesService.removeMovieFromFavourites(id);
@@ -85,14 +93,19 @@ export class ApiService {
       )
   }
 
-  private mapMoviesToActorMovies(data: Movie[]): ActorMovies[] {
+  private mapMoviesToActorMovies(data: Movie[], name?: string): ActorMovies[] {
     const newData: ActorMovies[] = [];
+    const nameLowerCase = name?.toLowerCase();
 
     for (const movie of data) {
       if (!movie.actors) {
         continue;
       }
       for (const actor of movie.actors) {
+        if (nameLowerCase && !actor.name?.toLowerCase().includes(nameLowerCase)) {
+          continue;
+        }
+
         newData.push({
           id: movie.id,
           title: movie.title,
@@ -100,7 +113,8 @@ export class ApiService {
           name: actor.name,
           description: actor.description,
           birthYear: actor.birthYear,
-          birthPlace: actor.birthPlace
+          birthPlace: actor.birthPlace,
+          movie: movie
         });
       }
     }

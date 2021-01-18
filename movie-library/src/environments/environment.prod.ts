@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
   apiUrl: 'http://localhost:5000',
-  pageSize: 100,
-  debounceTime: 500
+  pageSize: 10,
+  debounceTime: 500,
+  bigPageSize: 10000
 };
