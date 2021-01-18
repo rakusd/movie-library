@@ -15,6 +15,7 @@ WHERE {{
   {title_filter}  
   {year_filter}
 }} }}
+ORDER BY ?movie
 LIMIT {limit} OFFSET {offset}
 """
 

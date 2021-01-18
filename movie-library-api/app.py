@@ -46,6 +46,7 @@ def get_movies_and_actors(movie_id_df):
             'title': row['title'],
             'year': row['release_date'],
             'actors': [{
+                'id': actor_row['actor'],
                 'name': actor_row['actor_name'],
                 'description': actor_row['actor_description'],
                 'birthYear': actor_row['actor_birth_date'],
@@ -71,6 +72,7 @@ def get_my_movies_and_actors(movie_id_df):
             'title': row['title'],
             'year': row['release_date'],
             'actors': [{
+                'id': actor_row['actor'],
                 'name': actor_row['actor_name'],
                 'description': actor_row['actor_description'],
                 'birthYear': actor_row['actor_birth_date'],
