@@ -8,6 +8,7 @@ import { ActorMovies } from 'src/app/api/actor-movies';
 import { environment } from '../../../environments/environment';
 import { MatPaginator } from '@angular/material/paginator';
 import { FavouritesSyncService } from 'src/app/favourites/favourites-sync.service';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-explore-movie-actors',
@@ -31,6 +32,7 @@ export class ExploreMovieActorsComponent implements OnInit, AfterViewInit, OnDes
 
   actorName: string = '';
   offset = 0;
+  useSlowQuery = true;
 
   private favouriteMovies: Set<string> = new Set<string>();
 
@@ -75,7 +77,7 @@ export class ExploreMovieActorsComponent implements OnInit, AfterViewInit, OnDes
   public getMoviesByActors() {
     this.showDetails = false;
     this.loadingData = true;
-    this.api.searchMoviesByActor(environment.pageSize, this.offset, this.actorName)
+    this.api.searchMoviesByActor(environment.pageSize, this.offset, this.actorName, this.useSlowQuery)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
         for (const it of data) {
@@ -99,11 +101,11 @@ export class ExploreMovieActorsComponent implements OnInit, AfterViewInit, OnDes
   }
 
   public addToFavourites(element: ActorMovies) {
-    if (!element.id || element.movie?.favourite) {
+    if (!element.id || !element.movie || element.movie?.favourite) {
       return;
     }
 
-    this.api.addToFavouriteMovies(element.id)
+    this.api.addToFavouriteMovies(element.movie)
       .subscribe(_ => {
         this.snackBarService.showMessage('Successfully added movie to favourites!')
       });
@@ -112,6 +114,11 @@ export class ExploreMovieActorsComponent implements OnInit, AfterViewInit, OnDes
   public rowClicked(row: ActorMovies) {
     this.showDetails = true;
     this.selectedActor = row;
+  }
+
+  public querySpeedChanged(event: MatSlideToggleChange) {
+    this.useSlowQuery = event.checked;
+    this.getMoviesByActors();
   }
 
   private initComponent() {

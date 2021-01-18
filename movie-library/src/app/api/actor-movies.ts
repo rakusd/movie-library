@@ -7,6 +7,7 @@ export class ActorMovies {
     year?: string;
 
     // Actor
+    actorId? : string;
     name?: string;
     description?: string;
     birthYear?: string;
