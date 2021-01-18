@@ -1,4 +1,4 @@
-FAST_QUERY = """
+SLOW_QUERY = """
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX http: <http://www.w3.org/2011/http#>
 PREFIX fo: <http://www.w3.org/1999/XSL/Format#>
@@ -51,7 +51,7 @@ WHERE {{
 """
 
 
-SLOW_QUERY = """
+FAST_QUERY = """
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX http: <http://www.w3.org/2011/http#>
 PREFIX fo: <http://www.w3.org/1999/XSL/Format#>

@@ -90,7 +90,7 @@ def search_movies():
     year = request.args.get('year', None, int)
     limit = request.args.get('limit', 20, int)
     offset = request.args.get('offset', 0, int)
-    use_slow_query = request.args.get('use_slow_query', False, bool)
+    use_slow_query = bool(request.args.get('use_slow_query', 0, int))
 
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
     sparql.setQuery(fmidbm.QUERY.format(
