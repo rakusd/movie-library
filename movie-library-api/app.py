@@ -137,7 +137,7 @@ def search_by_actor():
         offset=offset
     ))
 
-    movie_id_df = query_and_get_df(sparql, use_slow_query)
+    movie_id_df = query_and_get_df(sparql)
 
     return jsonify(get_movies_and_actors(movie_id_df, use_slow_query))
 
