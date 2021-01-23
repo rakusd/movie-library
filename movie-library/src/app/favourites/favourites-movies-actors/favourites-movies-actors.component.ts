@@ -26,6 +26,7 @@ export class FavouritesMoviesActorsComponent implements OnInit, AfterViewInit, O
   public showDetails = false;
   public selectedActor: ActorMovies = {};
 
+  stop$ = new Subject();
   destroy$ = new Subject();
   actorNameFilterChanged$ = new Subject<string>();
 
@@ -65,15 +66,19 @@ export class FavouritesMoviesActorsComponent implements OnInit, AfterViewInit, O
   }
 
   ngOnDestroy(): void {
+    this.stop$.next();
+    this.stop$.complete();
+
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   public getFavouritesMoviesByActors() {
+    this.cancelOngoingRequests();
     this.showDetails = false;
     this.loadingData = true;
     this.api.searchFavouritesMoviesByActor(environment.pageSize, this.offset, this.actorName)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.stop$))
       .subscribe(data => {
         this.dataSource.data = data;
         this.loadingData = false;
@@ -98,5 +103,9 @@ export class FavouritesMoviesActorsComponent implements OnInit, AfterViewInit, O
   public rowClicked(row: ActorMovies) {
     this.showDetails = true;
     this.selectedActor = row;
+  }
+
+  private cancelOngoingRequests() {
+    this.stop$.next();
   }
 }

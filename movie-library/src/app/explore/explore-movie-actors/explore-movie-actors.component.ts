@@ -27,6 +27,7 @@ export class ExploreMovieActorsComponent implements OnInit, AfterViewInit, OnDes
   public showDetails = false;
   public selectedActor: ActorMovies = {};
 
+  stop$ = new Subject();
   destroy$ = new Subject();
   actorNameFilterChanged$ = new Subject<string>();
 
@@ -35,6 +36,7 @@ export class ExploreMovieActorsComponent implements OnInit, AfterViewInit, OnDes
   useSlowQuery = false;
 
   private favouriteMovies: Set<string> = new Set<string>();
+  private isInitialized = false;
 
   constructor(
     private api: ApiService,
@@ -70,15 +72,23 @@ export class ExploreMovieActorsComponent implements OnInit, AfterViewInit, OnDes
   }
 
   ngOnDestroy(): void {
+    this.stop$.next();
+    this.stop$.complete();
+
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   public getMoviesByActors() {
+    if (!this.isInitialized) {
+      return;
+    }
+
+    this.cancelOngoingRequests();
     this.showDetails = false;
     this.loadingData = true;
     this.api.searchMoviesByActor(environment.pageSize, this.offset, this.actorName, this.useSlowQuery)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.stop$))
       .subscribe(data => {
         for (const it of data) {
           if (it.id && it.movie) {
@@ -123,17 +133,23 @@ export class ExploreMovieActorsComponent implements OnInit, AfterViewInit, OnDes
 
   private initComponent() {
     this.api.searchFavouritesMovies(environment.bigPageSize, 0)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.stop$))
       .subscribe(data => {
         for (const item of data) {
           if (item.id) {
             this.favouriteMovies.add(item.id);
           }
         }
+        this.isInitialized = true;
         this.getMoviesByActors();
       },
         error => {
+          this.isInitialized = true;
           console.log(error);
         });
+  }
+
+  private cancelOngoingRequests() {
+    this.stop$.next();
   }
 }
