@@ -52,7 +52,7 @@ def get_movies_and_actors(movie_id_df, use_slow_query):
                 'description': actor_row['actor_description'],
                 'birthYear': str(actor_row['actor_birth_date']) if actor_row['actor_birth_date'] else None,
                 'birthPlace': actor_row['actor_birth_place']
-            } for _, actor_row in results[results['movie']==row['movie']][['actor_name','actor_description','actor_birth_date','actor_birth_place', 'actor']].drop_duplicates().iterrows()]
+            } for _, actor_row in results.iloc[results[results['movie'] == row['movie']]['actor'].drop_duplicates().index].iterrows()]
         })
     
     return response
@@ -92,6 +92,8 @@ def search_movies():
     offset = request.args.get('offset', 0, int)
     use_slow_query = bool(request.args.get('use_slow_query', 0, int))
 
+    movie_name =  None if movie_name == None else movie_name.replace("'", r"\'")
+
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
     sparql.setQuery(fmidbm.QUERY.format(
         title_filter=fmidbm.TITLE_FILTER.format(movie_name=movie_name) if movie_name else '', 
@@ -110,6 +112,8 @@ def my_movies():
     year = request.args.get('year', None, int)
     limit = request.args.get('limit', 20, int)
     offset = request.args.get('offset', 0, int)
+
+    movie_name = None if movie_name == None else movie_name.replace("'", r"\'")
 
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
     sparql.setQuery(mmidbm.QUERY.format(
@@ -130,6 +134,8 @@ def search_by_actor():
     offset = request.args.get('offset', 0, int)
     use_slow_query = bool(request.args.get('use_slow_query', 0, int))
 
+    actor = actor.replace("'", r"\'")
+
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
     sparql.setQuery(fmiba.QUERY.format(
         actor=actor,
@@ -147,6 +153,8 @@ def my_movies_by_actor():
     actor = param_helpers.ensure_string(request.args.get('actor'))
     limit = request.args.get('limit', 20, int)
     offset = request.args.get('offset', 0, int)
+
+    actor = actor.replace("'", r"\'")
 
     sparql = SPARQLWrapper(SPARQL_ENDPOINT)
     sparql.setQuery(mmiba.QUERY.format(

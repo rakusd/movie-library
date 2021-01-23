@@ -28,6 +28,7 @@ export class FavouritesMoviesComponent implements OnInit, AfterViewInit, OnDestr
   public selectedMovie: Movie = {};
   public selectedMovieActors: Actor[] = [];
 
+  stop$ = new Subject();
   destroy$ = new Subject();
   titleFilterChanged$ = new Subject<string>();
   yearFilterChanged$ = new Subject<number>();
@@ -77,15 +78,19 @@ export class FavouritesMoviesComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngOnDestroy(): void {
+    this.stop$.next();
+    this.stop$.complete();
+
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   public getMovies() {
+    this.cancelOngoingRequests();
     this.loadingData = true;
     this.showDetails = false;
     this.api.searchFavouritesMovies(environment.pageSize, this.offset, this.titleFilter, this.yearFilter)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.stop$))
       .subscribe(data => {
         this.dataSource.data = data;
         this.loadingData = false;
@@ -115,5 +120,9 @@ export class FavouritesMoviesComponent implements OnInit, AfterViewInit, OnDestr
     this.showDetails = true;
     this.selectedMovie = row;
     this.selectedMovieActors = row.actors || [];
+  }
+
+  private cancelOngoingRequests() {
+    this.stop$.next();
   }
 }

@@ -29,6 +29,7 @@ export class ExploreMoviesComponent implements OnInit, AfterViewInit, OnDestroy 
   public selectedMovie: Movie = {};
   public selectedMovieActors: Actor[] = [];
 
+  stop$ = new Subject();
   destroy$ = new Subject();
   titleFilterChanged$ = new Subject<string>();
   yearFilterChanged$ = new Subject<number>();
@@ -39,6 +40,7 @@ export class ExploreMoviesComponent implements OnInit, AfterViewInit, OnDestroy 
   useSlowQuery = false;
 
   private favouriteMovies: Set<string> = new Set<string>();
+  private isInitialized = false;
 
   constructor(
     private api: ApiService,
@@ -82,15 +84,23 @@ export class ExploreMoviesComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   ngOnDestroy(): void {
+    this.stop$.next();
+    this.stop$.complete();
+
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   public getMovies() {
+    if (!this.isInitialized) {
+      return;
+    }
+
+    this.cancelOngoingRequests();
     this.loadingData = true;
     this.showDetails = false;
     this.api.searchMovies(environment.pageSize, this.offset, this.titleFilter, this.yearFilter, this.useSlowQuery)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.stop$))
       .subscribe(data => {
         for (const it of data) {
           if (it.id) {
@@ -141,17 +151,23 @@ export class ExploreMoviesComponent implements OnInit, AfterViewInit, OnDestroy 
 
   private initComponent() {
     this.api.searchFavouritesMovies(environment.bigPageSize, 0)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.stop$))
       .subscribe(data => {
         for (const item of data) {
           if (item.id) {
             this.favouriteMovies.add(item.id);
           }
         }
+        this.isInitialized = true;
         this.getMovies();
       },
         error => {
+          this.isInitialized = true;
           console.log(error);
         });
+  }
+
+  private cancelOngoingRequests() {
+    this.stop$.next();
   }
 }

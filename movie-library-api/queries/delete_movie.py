@@ -12,6 +12,7 @@ prefix purl: <http://purl.org/dc/terms/>
 prefix owl: <http://www.w3.org/2002/07/owl#>
 DELETE WHERE {{
   GRAPH <http://my.movie.library.com/library> {{
+
     <{id}> lmdb:actor ?actor ;
     lmdb:initial_release_date ?date ;
     purl:title ?title .
