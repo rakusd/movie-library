@@ -52,7 +52,7 @@ def get_movies_and_actors(movie_id_df, use_slow_query):
                 'description': actor_row['actor_description'],
                 'birthYear': str(actor_row['actor_birth_date']) if actor_row['actor_birth_date'] else None,
                 'birthPlace': actor_row['actor_birth_place']
-            } for _, actor_row in results[results['movie']==row['movie']][['actor_name','actor_description','actor_birth_date','actor_birth_place', 'actor']].drop_duplicates().iterrows()]
+            } for _, actor_row in results.iloc[results[results['movie'] == row['movie']]['actor'].drop_duplicates().index].iterrows()]
         })
     
     return response
